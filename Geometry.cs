@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+
 namespace Geometry {
   /// <summary>
   /// Class for 2D coordinate (x, y)
@@ -8,6 +11,9 @@ namespace Geometry {
     public Point(double x, double y) {
       this.x = x;
       this.y = y;
+    }
+    public String toString() {
+      return $"({this.x},{this.y})";
     }
   }
 
@@ -165,6 +171,53 @@ namespace Geometry {
         result = (p.x >= minX && p.x <= maxX) && (p.y >= minY && p.y <= maxY);
       }
       return result;
+    }
+  }
+
+  public class Shape {
+    public readonly List<Point> vertices;
+    public readonly List<Line> sides;
+
+    public Shape() {
+      vertices = new List<Point> { };
+      sides = new List<Line> { };
+    }
+
+    public bool validateSides(Line l) {
+      for (int i = 0; i < sides.Count; i++) {
+        if (Line.areIntersect(sides[i], l)) return false;
+      }
+      return true;
+    }
+
+    public void addPoint(Point p) {
+      if (vertices.Count != 0 && sides.Count != 0) {
+        Line newLine = new Line(vertices[vertices.Count - 1], p);
+        if (this.validateSides(newLine)) {
+          sides.Add(newLine);
+        } else {
+          throw new GeometryException($"Invalid point ({p.x}, {p.y}) added to the shape");
+        }
+      }
+      // New point
+      vertices.Add(p);
+    }
+
+    public void finalize() {
+      Point p = vertices[vertices.Count - 1];
+      Line newLine = new Line(vertices[vertices.Count - 1], vertices[0]);
+      if (this.validateSides(newLine)) {
+        sides.Add(newLine);
+      } else {
+        throw new GeometryException($"Invalid point ({p.x}, {p.y}) added to the shape");
+      }
+    }
+
+    public bool checkPointWithin(Point p) {
+      // Check p = any of the vertices
+      // Check p on any of the sides
+      // Check Line(p, new Point(maxX, p.y)) intersect with how many sides
+      return false;
     }
   }
 
