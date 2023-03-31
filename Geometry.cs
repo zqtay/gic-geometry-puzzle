@@ -2,18 +2,57 @@ using System;
 using System.Collections.Generic;
 
 namespace Geometry {
+
+  /// <summary>
+  /// Types of line intersection
+  /// </summary>
+  public enum IntersectType : ushort {
+    NONE = 0, // Not intersecting
+    POINT_TO_POINT = 1, // One endpoint is connected to the other line endpoint
+    POINT_TO_LINE = 2, // One endpoint is connected to the other line segment
+    LINE_TO_LINE = 3, // Lines cross each other
+    OVERLAP = 4, // Line is colinear and overlapping
+    EQUIVALENT = 5 // Both lines are equal
+  }
+
   /// <summary>
   /// Class for 2D coordinate (x, y)
   /// </summary>
   public class Point {
+    /// <summary>
+    /// x coordinate of the point
+    /// </summary>
     public readonly double x;
+    /// <summary>
+    /// y coordinate of the point
+    /// </summary>
     public readonly double y;
+
+    /// <summary>
+    /// Constructor with given coordinates
+    /// </summary>
+    /// <param name="x">x coordinate</param>
+    /// <param name="y">y coordinate</param>
     public Point(double x, double y) {
       this.x = x;
       this.y = y;
     }
+
+    /// <summary>
+    /// Convert coordinate to string
+    /// </summary>
+    /// <returns>String "(x,y)"</returns>
     public String toString() {
       return $"({this.x},{this.y})";
+    }
+
+    /// <summary>
+    /// Check if this point is equal to the given point
+    /// </summary>
+    /// <param name="p"></param>
+    /// <returns></returns>
+    public bool isEqual(Point p) {
+      return (this.x == p.x && this.y == p.y);
     }
   }
 
@@ -71,87 +110,155 @@ namespace Geometry {
     }
 
     /// <summary>
-    /// Check if two lines are parallel
+    /// Check if this line has both endpoints
     /// </summary>
-    /// <param name="l1">Line 1</param>
-    /// <param name="l2">Line 2</param>
+    /// <returns>true if endpoints exist</returns>
+    public bool hasEndPoints() {
+      return (this.p1 != null && this.p2 != null);
+    }
+
+    /// <summary>
+    /// Check if this line is parallel to the given line
+    /// </summary>
+    /// <param name="line">Line to check against</param>
     /// <returns>true if both lines are parallel</returns>
-    public static bool areParallel(Line l1, Line l2) {
-      return ((l1.a * l2.b) - (l2.a * l1.b) == 0);
+    public bool isParallel(Line line) {
+      return ((this.a * line.b) - (line.a * this.b) == 0);
     }
 
     /// <summary>
-    /// Check if two lines are co-linear (exist on the same line)
+    /// Check if this line is co-linear with the given line (exist on the same line)
     /// </summary>
-    /// <param name="l1">Line 1</param>
-    /// <param name="l2">Line 2</param>
+    /// <param name="line">Line to check against</param>
     /// <returns>true if both lines are colinear</returns>
-    public static bool areColinear(Line l1, Line l2) {
-      double ac = (l1.a * l2.c) - (l2.a * l1.c);
-      double bc = (l1.b * l2.c) - (l2.b * l1.c);
-      return (areParallel(l1, l2) && ac == 0 && bc == 0);
+    public bool isColinear(Line line) {
+      double ac = (this.a * line.c) - (line.a * this.c);
+      double bc = (this.b * line.c) - (line.b * this.c);
+      return (this.isParallel(line) && ac == 0 && bc == 0);
     }
 
     /// <summary>
-    /// Get the intersecting point of two lines
+    /// Check if any of the endpoints of this line is connected to the other line's
+    /// </summary>
+    /// <param name="line">Line to check against</param>
+    /// <returns>true if any endpoints are connected</returns>
+    public bool isPointConnected(Line line) {
+      if (!this.hasEndPoints() || !line.hasEndPoints()) {
+        throw new GeometryException("Line has no endpoints");
+      }
+      return (this.p1.isEqual(line.p1) || this.p1.isEqual(line.p2) || this.p2.isEqual(line.p2));
+    }
+
+    /// <summary>
+    /// Check if this line is equivalent to the given line
+    /// </summary>
+    /// <param name="line">Line to check against</param>
+    /// <returns>true if both lines are equivalent</returns>
+    public bool isEqual(Line line) {
+      if (this.hasEndPoints() && line.hasEndPoints()) {
+        // Compare endpoints if exist
+        return (this.p1.isEqual(line.p1) && this.p2.isEqual(line.p2)) ||
+               (this.p1.isEqual(line.p2) && this.p2.isEqual(line.p1));
+      }
+      else if (!this.hasEndPoints() && !line.hasEndPoints()) {
+        // Both line have no endpoints
+        return (this.a == line.a && this.b == line.b && this.c == line.c);
+      }
+      // One line has endpoints but other dont
+      return false;
+    }
+
+    /// <summary>
+    /// Get the intersecting point of this line and given line
     /// Both lines must not be parallel
     /// </summary>
-    /// <param name="l1">Line 1</param>
-    /// <param name="l2">Line 2</param>
+    /// <param name="line">Line to check against</param>
     /// <returns>Point of intersection</returns>
-    public static Point getIntersect(Line l1, Line l2) {
-      double ab = (l1.a * l2.b) - (l2.a * l1.b);
-      double bc = (l1.b * l2.c) - (l2.b * l1.c);
-      double ca = (l1.c * l2.a) - (l2.c * l1.a);
+    public Point getIntersectPoint(Line line) {
+      double ab = (this.a * line.b) - (line.a * this.b);
+      double bc = (this.b * line.c) - (line.b * this.c);
+      double ca = (this.c * line.a) - (line.c * this.a);
+      if (ab == 0) {
+        throw new GeometryException("Lines are parallel");
+      }
       return new Point(bc / ab, ca / ab);
     }
 
     /// <summary>
-    /// Check if two lines are intersecting
+    /// Check if this line is intersecting with the given line
     /// </summary>
-    /// <param name="l1">Line 1</param>
-    /// <param name="l2">Line 2</param>
-    /// <returns>true if both lines intersect</returns>
-    public static bool areIntersect(Line l1, Line l2) {
-      bool zParallel = areParallel(l1, l2);
-      bool zColinear = areColinear(l1, l2);
-      if (l1.p1 == null && l1.p2 == null && l2.p1 == null && l2.p2 == null) {
-        // No point limits
-        // Lines intersect if not parallel or is colinear
-        return !zParallel || zColinear;
-      } else {
-        // Both line parallel and not colinear
-        if (zParallel && !zColinear) return false;
+    /// <param name="line">Line to check against</param>
+    /// <returns>Type of intersection IntersectType</returns>
+    public IntersectType getIntersectType(Line line) {
+      bool zParallel = this.isParallel(line);
+      bool zColinear = this.isColinear(line);
+      bool zThisHasEP = this.hasEndPoints();
+      bool zLineHasEP = line.hasEndPoints();
+
+      // Exact same lines
+      if (this.isEqual(line)) return IntersectType.EQUIVALENT;
+      // Both line parallel and not colinear
+      if (zParallel && !zColinear) return IntersectType.NONE;
+
+      if (!zThisHasEP && !zLineHasEP) {
+        // No endpoints
+        // Lines intersect if not parallel
+        if (!zParallel) return IntersectType.LINE_TO_LINE;
+        else return IntersectType.NONE;
+      }
+      else {
+        // One or both lines has endpoints
+        // Check if lines are point to point connected
+        if (zThisHasEP && zLineHasEP && this.isPointConnected(line)) {
+          if (zColinear) {
+            // POINT_TO_POINT or OVERLAP
+            // One line folds on another from the same endpoint
+            if (this.checkPoint(line.p1) && this.checkPoint(line.p2)) return IntersectType.OVERLAP;
+            else if (line.checkPoint(this.p1) && line.checkPoint(this.p2)) return IntersectType.OVERLAP;
+            // Both line extends out from the same endpoint
+            else return IntersectType.POINT_TO_POINT;
+          }
+          else {
+            return IntersectType.POINT_TO_POINT;
+          }
+        }
         // Both line colinear, check range
         if (zColinear) {
           // Check any endpoints are within the other
-          if (l1.p1 != null && l1.p2 != null) {
-            return l2.checkPoint(l1.p1) || l2.checkPoint(l1.p2);
-          } else if (l2.p1 != null && l2.p2 != null) {
-            return l1.checkPoint(l2.p1) || l1.checkPoint(l2.p2);
-          } else {
-            // This case should be extrapolate case
-            throw new GeometryException("Invalid line");
+          if (zThisHasEP) {
+            if (line.checkPoint(this.p1) || line.checkPoint(this.p2)) return IntersectType.OVERLAP;
+            else return IntersectType.NONE;
+          }
+          else if (zLineHasEP) {
+            if (this.checkPoint(line.p1) || this.checkPoint(line.p2)) return IntersectType.OVERLAP;
+            else return IntersectType.NONE;
           }
         }
         // Not parallel
         if (!zParallel) {
-          Point pInt = getIntersect(l1, l2);
+          Point pInt = this.getIntersectPoint(line);
           // Check the extrapolated intersect point is on both lines
           // If it is, the actual line segments are intersecting
-          return l1.checkPoint(pInt) && l2.checkPoint(pInt);
+          if (this.checkPoint(pInt) && line.checkPoint(pInt)) {
+            // POINT_TO_LINE or LINE_TO_LINE
+            if ((zThisHasEP && (this.p1.isEqual(pInt) || this.p2.isEqual(pInt))) ||
+                (zLineHasEP && (line.p1.isEqual(pInt) || line.p2.isEqual(pInt)))) {
+              // Intersection point is one of the endpoints of one of the lines
+              return IntersectType.POINT_TO_LINE;
+            }
+            else {
+              // Both lines cross each other
+              return IntersectType.LINE_TO_LINE;
+            }
+          }
+          else {
+            // Not intersecting
+            return IntersectType.NONE;
+          }
         }
         // Invalid case, all cases should be handled
         throw new GeometryException("Invalid line");
       }
-    }
-
-    /// <summary>
-    /// Get the slope of the line
-    /// </summary>
-    /// <returns></returns>
-    public double getSlope() {
-      return -(this.a / this.b);
     }
 
     /// <summary>
@@ -164,13 +271,18 @@ namespace Geometry {
       bool result = (this.a * p.x + this.b * p.y + this.c == 0);
       // Check if the point is within range (if present)
       if (result && this.p1 != null && this.p2 != null) {
-        var minX = this.p1.x < this.p2.x ? this.p1.x : this.p2.x;
-        var maxX = this.p1.x > this.p2.x ? this.p1.x : this.p2.x;
-        var minY = this.p1.y < this.p2.y ? this.p1.y : this.p2.y;
-        var maxY = this.p1.y > this.p2.y ? this.p1.y : this.p2.y;
-        result = (p.x >= minX && p.x <= maxX) && (p.y >= minY && p.y <= maxY);
+        result = ((p.x >= this.p1.x && p.x <= this.p2.x) || (p.x >= this.p2.x && p.x <= this.p1.x)) &&
+                 ((p.y >= this.p1.y && p.y <= this.p2.y) || (p.y >= this.p2.y && p.y <= this.p1.y));
       }
       return result;
+    }
+
+    /// <summary>
+    /// Get the slope of the line
+    /// </summary>
+    /// <returns></returns>
+    public double getSlope() {
+      return -(this.a / this.b);
     }
   }
 
@@ -183,20 +295,40 @@ namespace Geometry {
       sides = new List<Line> { };
     }
 
-    public bool validateSides(Line l) {
+    public bool validateSides(Line line) {
       for (int i = 0; i < sides.Count; i++) {
-        if (Line.areIntersect(sides[i], l)) return false;
+        // Only point to point is allowed
+        if (line.getIntersectType(sides[i]) != IntersectType.POINT_TO_POINT) return false;
       }
       return true;
     }
 
     public void addPoint(Point p) {
-      if (vertices.Count != 0 && sides.Count != 0) {
+      if (vertices.Count >= 1) {
+        // Error flag
+        bool zError = false;
+        // Line = last vertex to p
         Line newLine = new Line(vertices[vertices.Count - 1], p);
-        if (this.validateSides(newLine)) {
-          sides.Add(newLine);
-        } else {
+
+        // Check new side is valid
+        if (sides.Count >= 1) {
+          if (!this.validateSides(newLine)) zError = true;
+        }
+
+        // If p is possible to form a shape (p is the third vertex)
+        // Also check the line from p to first vertex is valid
+        if (sides.Count >= 2) {
+          Line newLine2 = new Line(vertices[vertices.Count - 1], vertices[0]);
+          if (!this.validateSides(newLine)) zError = true;
+        }
+
+        // Check error
+        if (zError) {
           throw new GeometryException($"Invalid point ({p.x}, {p.y}) added to the shape");
+        }
+        else {
+          // New side
+          sides.Add(newLine);
         }
       }
       // New point
@@ -208,7 +340,8 @@ namespace Geometry {
       Line newLine = new Line(vertices[vertices.Count - 1], vertices[0]);
       if (this.validateSides(newLine)) {
         sides.Add(newLine);
-      } else {
+      }
+      else {
         throw new GeometryException($"Invalid point ({p.x}, {p.y}) added to the shape");
       }
     }
