@@ -57,6 +57,9 @@ namespace Geometry {
     /// <param name="b">Coeffeicent for y</param>
     /// <param name="c">Constant</param>
     public Line(decimal a, decimal b, decimal c) {
+      if (a == 0 && b == 0) {
+        throw new GeometryException(GeometryExceptionType.LINE_INVALID);
+      }
       this.a = a;
       this.b = b;
       this.c = c;
@@ -94,6 +97,7 @@ namespace Geometry {
 
     /// <summary>
     /// Check if any of the endpoints of this line is connected to the other line's
+    /// This method does not differentiate between one or both points connected
     /// </summary>
     /// <param name="line">Line to check against</param>
     /// <returns>true if any endpoints are connected</returns>
@@ -101,7 +105,8 @@ namespace Geometry {
       if (!this.hasEndPoints() || !line.hasEndPoints()) {
         throw new GeometryException(GeometryExceptionType.LINE_NO_ENDPOINTS);
       }
-      return (this.p1.isEqual(line.p1) || this.p1.isEqual(line.p2) || this.p2.isEqual(line.p2));
+      return (this.p1.isEqual(line.p1) || this.p1.isEqual(line.p2) ||
+              this.p2.isEqual(line.p1) || this.p2.isEqual(line.p2));
     }
 
     /// <summary>
@@ -117,7 +122,33 @@ namespace Geometry {
       }
       else if (!this.hasEndPoints() && !line.hasEndPoints()) {
         // Both line have no endpoints
-        return (this.a == line.a && this.b == line.b && this.c == line.c);
+        // abc of each line must have values or zero together
+        bool zValidABC = ((this.a != 0 && line.a != 0) || (this.a == 0 && line.a == 0)) &&
+                         ((this.b != 0 && line.b != 0) || (this.b == 0 && line.b == 0)) &&
+                         ((this.c != 0 && line.c != 0) || (this.c == 0 && line.c == 0));
+        if (!zValidABC) return false;
+        // Get ratio between lines
+        decimal ratioA = (this.a == 0 && line.a == 0) ? 0 : this.a / line.a;
+        decimal ratioB = (this.b == 0 && line.b == 0) ? 0 : this.b / line.b;
+        decimal ratioC = (this.c == 0 && line.c == 0) ? 0 : this.c / line.c;
+        if (ratioA != 0) {
+          if (ratioB != 0) {
+            if (!ratioA.AlmostEqual(ratioB)) return false;
+          }
+          if (ratioC != 0) {
+            if (!ratioA.AlmostEqual(ratioC)) return false;
+          }
+        }
+        else if (ratioB != 0) {
+          if (ratioC != 0) {
+            if (!ratioB.AlmostEqual(ratioC)) return false;
+          }
+        }
+        else {
+          // Should not reach here, either a or b must have value
+          throw new GeometryException(GeometryExceptionType.LINE_INVALID);
+        }
+        return true;
       }
       // One line has endpoints but other dont
       return false;
@@ -212,7 +243,7 @@ namespace Geometry {
           }
         }
         // Invalid case, all cases should be handled
-        throw new GeometryException(GeometryExceptionType.LINE_INVALID);
+        throw new GeometryException(GeometryExceptionType.OPERATION_INVALID);
       }
     }
 
