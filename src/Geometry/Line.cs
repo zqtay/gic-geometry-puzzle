@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-
 namespace Geometry {
 
   /// <summary>
@@ -13,47 +10,6 @@ namespace Geometry {
     LINE_TO_LINE = 3, // Lines cross each other
     OVERLAP = 4, // Line is colinear and overlapping
     EQUIVALENT = 5 // Both lines are equal
-  }
-
-  /// <summary>
-  /// Class for 2D coordinate (x, y)
-  /// </summary>
-  public class Point {
-    /// <summary>
-    /// x coordinate of the point
-    /// </summary>
-    public readonly double x;
-    /// <summary>
-    /// y coordinate of the point
-    /// </summary>
-    public readonly double y;
-
-    /// <summary>
-    /// Constructor with given coordinates
-    /// </summary>
-    /// <param name="x">x coordinate</param>
-    /// <param name="y">y coordinate</param>
-    public Point(double x, double y) {
-      this.x = x;
-      this.y = y;
-    }
-
-    /// <summary>
-    /// Convert coordinate to string
-    /// </summary>
-    /// <returns>String "(x,y)"</returns>
-    public String toString() {
-      return $"({this.x},{this.y})";
-    }
-
-    /// <summary>
-    /// Check if this point is equal to the given point
-    /// </summary>
-    /// <param name="p"></param>
-    /// <returns></returns>
-    public bool isEqual(Point p) {
-      return (this.x == p.x && this.y == p.y);
-    }
   }
 
   /// <summary>
@@ -76,6 +32,9 @@ namespace Geometry {
     /// <param name="p1">Point 1</param>
     /// <param name="p2">Point 2</param>
     public Line(Point p1, Point p2) {
+      if (p1.isEqual(p2)) {
+        throw new GeometryException(GeometryExceptionType.LINE_SAME_ENDPOINTS);
+      }
       this.p1 = p1;
       this.p2 = p2;
       this.a = this.p1.y - this.p2.y;
@@ -144,7 +103,7 @@ namespace Geometry {
     /// <returns>true if any endpoints are connected</returns>
     public bool isPointConnected(Line line) {
       if (!this.hasEndPoints() || !line.hasEndPoints()) {
-        throw new GeometryException("Line has no endpoints");
+        throw new GeometryException(GeometryExceptionType.LINE_NO_ENDPOINTS);
       }
       return (this.p1.isEqual(line.p1) || this.p1.isEqual(line.p2) || this.p2.isEqual(line.p2));
     }
@@ -179,7 +138,7 @@ namespace Geometry {
       double bc = (this.b * line.c) - (line.b * this.c);
       double ca = (this.c * line.a) - (line.c * this.a);
       if (ab == 0) {
-        throw new GeometryException("Lines are parallel");
+        throw new GeometryException(GeometryExceptionType.LINE_PARALLEL);
       }
       return new Point(bc / ab, ca / ab);
     }
@@ -222,7 +181,7 @@ namespace Geometry {
             return IntersectType.POINT_TO_POINT;
           }
         }
-        // Both line colinear, check range
+        // Both line colinear, check boundaries
         if (zColinear) {
           // Check any endpoints are within the other
           if (zThisHasEP) {
@@ -257,7 +216,7 @@ namespace Geometry {
           }
         }
         // Invalid case, all cases should be handled
-        throw new GeometryException("Invalid line");
+        throw new GeometryException(GeometryExceptionType.LINE_INVALID);
       }
     }
 
@@ -265,11 +224,11 @@ namespace Geometry {
     /// Check whether a point is on the line
     /// </summary>
     /// <param name="p">Point to be checked</param>
-    /// <returns>true if point is on the line and within range</returns>
+    /// <returns>true if point is on the line and within boundaries</returns>
     public bool checkPoint(Point p) {
       // Check if the point is on the extrapolated line
       bool result = (this.a * p.x + this.b * p.y + this.c == 0);
-      // Check if the point is within range (if present)
+      // Check if the point is within boundaries (if present)
       if (result && this.p1 != null && this.p2 != null) {
         result = ((p.x >= this.p1.x && p.x <= this.p2.x) || (p.x >= this.p2.x && p.x <= this.p1.x)) &&
                  ((p.y >= this.p1.y && p.y <= this.p2.y) || (p.y >= this.p2.y && p.y <= this.p1.y));
@@ -284,81 +243,5 @@ namespace Geometry {
     public double getSlope() {
       return -(this.a / this.b);
     }
-  }
-
-  public class Shape {
-    public readonly List<Point> vertices;
-    public readonly List<Line> sides;
-
-    public Shape() {
-      vertices = new List<Point> { };
-      sides = new List<Line> { };
-    }
-
-    public bool validateSides(Line line) {
-      for (int i = 0; i < sides.Count; i++) {
-        // Only point to point is allowed
-        if (line.getIntersectType(sides[i]) != IntersectType.POINT_TO_POINT) return false;
-      }
-      return true;
-    }
-
-    public void addPoint(Point p) {
-      if (vertices.Count >= 1) {
-        // Error flag
-        bool zError = false;
-        // Line = last vertex to p
-        Line newLine = new Line(vertices[vertices.Count - 1], p);
-
-        // Check new side is valid
-        if (sides.Count >= 1) {
-          if (!this.validateSides(newLine)) zError = true;
-        }
-
-        // If p is possible to form a shape (p is the third vertex)
-        // Also check the line from p to first vertex is valid
-        if (sides.Count >= 2) {
-          Line newLine2 = new Line(vertices[vertices.Count - 1], vertices[0]);
-          if (!this.validateSides(newLine)) zError = true;
-        }
-
-        // Check error
-        if (zError) {
-          throw new GeometryException($"Invalid point ({p.x}, {p.y}) added to the shape");
-        }
-        else {
-          // New side
-          sides.Add(newLine);
-        }
-      }
-      // New point
-      vertices.Add(p);
-    }
-
-    public void finalize() {
-      Point p = vertices[vertices.Count - 1];
-      Line newLine = new Line(vertices[vertices.Count - 1], vertices[0]);
-      if (this.validateSides(newLine)) {
-        sides.Add(newLine);
-      }
-      else {
-        throw new GeometryException($"Invalid point ({p.x}, {p.y}) added to the shape");
-      }
-    }
-
-    public bool checkPointWithin(Point p) {
-      // Check p = any of the vertices
-      // Check p on any of the sides
-      // Check Line(p, new Point(maxX, p.y)) intersect with how many sides
-      return false;
-    }
-  }
-
-  /// <summary>
-  /// Custom exception for Geometry
-  /// </summary>
-  public class GeometryException : System.Exception {
-    public GeometryException() { }
-    public GeometryException(string message) : base(message) { }
   }
 }
