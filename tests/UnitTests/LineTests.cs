@@ -561,7 +561,7 @@ public class LineTests {
     p2 = new Point(2, 1);
     l2 = new Line(p1, p2);
     Assert.AreEqual(IntersectType.POINT_TO_LINE, l1.getIntersectType(l2));
-    Assert.AreEqual(IntersectType.POINT_TO_LINE, l2.getIntersectType(l1));
+    Assert.AreEqual(IntersectType.LINE_TO_POINT, l2.getIntersectType(l1));
   }
 
   [Test]
@@ -573,7 +573,7 @@ public class LineTests {
     p1 = new Point(-5, 4);
     p2 = new Point(3, 6);
     l2 = new Line(p1, p2);
-    Assert.AreEqual(IntersectType.POINT_TO_LINE, l1.getIntersectType(l2));
+    Assert.AreEqual(IntersectType.LINE_TO_POINT, l1.getIntersectType(l2));
     Assert.AreEqual(IntersectType.POINT_TO_LINE, l2.getIntersectType(l1));
   }
 

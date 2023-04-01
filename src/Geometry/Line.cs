@@ -8,10 +8,11 @@ namespace Geometry {
   public enum IntersectType : ushort {
     NONE = 0, // Not intersecting
     POINT_TO_POINT = 1, // One endpoint is connected to the other line endpoint
-    POINT_TO_LINE = 2, // One endpoint is connected to the other line segment
-    LINE_TO_LINE = 3, // Lines cross each other
-    OVERLAP = 4, // Line is colinear and overlapping
-    EQUIVALENT = 5 // Both lines are equal
+    POINT_TO_LINE = 2, // One endpoint of this line touches the other line segment
+    LINE_TO_POINT = 3, // This line segment is touching one endpoint of the other line
+    LINE_TO_LINE = 4, // Lines cross each other
+    OVERLAP = 5, // Line is colinear and overlapping
+    EQUIVALENT = 6 // Both lines are equal
   }
 
   /// <summary>
@@ -226,11 +227,14 @@ namespace Geometry {
           // Check the extrapolated intersect point is on both lines
           // If it is, the actual line segments are intersecting
           if (this.checkPoint(pInt) && line.checkPoint(pInt)) {
-            // POINT_TO_LINE or LINE_TO_LINE
-            if ((zThisHasEP && (this.p1.isEqual(pInt) || this.p2.isEqual(pInt))) ||
-                (zLineHasEP && (line.p1.isEqual(pInt) || line.p2.isEqual(pInt)))) {
-              // Intersection point is one of the endpoints of one of the lines
+            // POINT_TO_LINE or LINE_TO_POINT or LINE_TO_LINE
+            if (zThisHasEP && (this.p1.isEqual(pInt) || this.p2.isEqual(pInt))) {
+              // Intersection point is one of the endpoints of this line
               return IntersectType.POINT_TO_LINE;
+            }
+            else if (zLineHasEP && (line.p1.isEqual(pInt) || line.p2.isEqual(pInt))) {
+              // Intersection point is one of the endpoints of other line
+              return IntersectType.LINE_TO_POINT;
             }
             else {
               // Both lines cross each other
