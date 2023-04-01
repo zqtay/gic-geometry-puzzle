@@ -1,7 +1,7 @@
 ﻿using System;
 using Geometry;
 
-namespace GICGeometryPuzzle {
+namespace PuzzleApp {
 
   public class Program {
     public static void Main() {
