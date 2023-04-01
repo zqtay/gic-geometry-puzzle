@@ -1,3 +1,5 @@
+using ExtensionMethods;
+
 namespace Geometry {
 
   /// <summary>
@@ -24,7 +26,7 @@ namespace Geometry {
     /// <summary>
     /// Coefficients for general linear equation ax + by + c = 0
     /// </summary>
-    public readonly double a, b, c;
+    public readonly decimal a, b, c;
 
     /// <summary>
     /// Constructor with two points
@@ -54,16 +56,10 @@ namespace Geometry {
     /// <param name="a">Coeffeicent for x</param>
     /// <param name="b">Coeffeicent for y</param>
     /// <param name="c">Constant</param>
-    public Line(double a, double b, double c) {
+    public Line(decimal a, decimal b, decimal c) {
       this.a = a;
       this.b = b;
       this.c = c;
-      if (this.a < 0) {
-        // Force x coefficient to positive
-        this.a *= -1;
-        this.b *= -1;
-        this.c *= -1;
-      }
       this.p1 = null;
       this.p2 = null;
     }
@@ -82,7 +78,7 @@ namespace Geometry {
     /// <param name="line">Line to check against</param>
     /// <returns>true if both lines are parallel</returns>
     public bool isParallel(Line line) {
-      return ((this.a * line.b) - (line.a * this.b) == 0);
+      return ((this.a * line.b) - (line.a * this.b)).AlmostEqual(0);
     }
 
     /// <summary>
@@ -91,9 +87,9 @@ namespace Geometry {
     /// <param name="line">Line to check against</param>
     /// <returns>true if both lines are colinear</returns>
     public bool isColinear(Line line) {
-      double ac = (this.a * line.c) - (line.a * this.c);
-      double bc = (this.b * line.c) - (line.b * this.c);
-      return (this.isParallel(line) && ac == 0 && bc == 0);
+      decimal ac = (this.a * line.c) - (line.a * this.c);
+      decimal bc = (this.b * line.c) - (line.b * this.c);
+      return (this.isParallel(line) && ac.AlmostEqual(0) && bc.AlmostEqual(0));
     }
 
     /// <summary>
@@ -134,10 +130,10 @@ namespace Geometry {
     /// <param name="line">Line to check against</param>
     /// <returns>Point of intersection</returns>
     public Point getIntersectPoint(Line line) {
-      double ab = (this.a * line.b) - (line.a * this.b);
-      double bc = (this.b * line.c) - (line.b * this.c);
-      double ca = (this.c * line.a) - (line.c * this.a);
-      if (ab == 0) {
+      decimal ab = (this.a * line.b) - (line.a * this.b);
+      decimal bc = (this.b * line.c) - (line.b * this.c);
+      decimal ca = (this.c * line.a) - (line.c * this.a);
+      if (ab.AlmostEqual(0)) {
         throw new GeometryException(GeometryExceptionType.LINE_PARALLEL);
       }
       return new Point(bc / ab, ca / ab);
@@ -227,7 +223,7 @@ namespace Geometry {
     /// <returns>true if point is on the line and within boundaries</returns>
     public bool checkPoint(Point p) {
       // Check if the point is on the extrapolated line
-      bool result = (this.a * p.x + this.b * p.y + this.c == 0);
+      bool result = (this.a * p.x + this.b * p.y + this.c).AlmostEqual(0);
       // Check if the point is within boundaries (if present)
       if (result && this.p1 != null && this.p2 != null) {
         result = ((p.x >= this.p1.x && p.x <= this.p2.x) || (p.x >= this.p2.x && p.x <= this.p1.x)) &&
@@ -240,7 +236,7 @@ namespace Geometry {
     /// Get the slope of the line
     /// </summary>
     /// <returns></returns>
-    public double getSlope() {
+    public decimal getSlope() {
       return -(this.a / this.b);
     }
   }

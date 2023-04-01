@@ -1,3 +1,5 @@
+using ExtensionMethods;
+
 namespace Geometry {
 
   /// <summary>
@@ -7,18 +9,18 @@ namespace Geometry {
     /// <summary>
     /// x coordinate of the point
     /// </summary>
-    public readonly double x;
+    public readonly decimal x;
     /// <summary>
     /// y coordinate of the point
     /// </summary>
-    public readonly double y;
+    public readonly decimal y;
 
     /// <summary>
     /// Constructor with given coordinates
     /// </summary>
     /// <param name="x">x coordinate</param>
     /// <param name="y">y coordinate</param>
-    public Point(double x, double y) {
+    public Point(decimal x, decimal y) {
       this.x = x;
       this.y = y;
     }
@@ -37,7 +39,7 @@ namespace Geometry {
     /// <param name="p"></param>
     /// <returns></returns>
     public bool isEqual(Point p) {
-      return (this.x == p.x && this.y == p.y);
+      return (this.x.AlmostEqual(p.x) && this.y.AlmostEqual(p.y));
     }
   }
 }

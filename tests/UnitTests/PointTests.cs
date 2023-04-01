@@ -5,8 +5,8 @@ namespace UnitTests;
 public class PointTests {
   Point p1;
   Point p2;
-  double x;
-  double y;
+  decimal x;
+  decimal y;
 
   [SetUp]
   public void Setup() {
@@ -32,8 +32,8 @@ public class PointTests {
 
   [Test]
   public void TestConstructor_NRM3() {
-    x = 3.142;
-    y = 2.718;
+    x = 3.142M;
+    y = 2.718M;
     p1 = new Point(x, y);
     Assert.AreEqual(x, p1.x);
     Assert.AreEqual(y, p1.y);
@@ -50,7 +50,7 @@ public class PointTests {
 
   [Test]
   public void TestConstructor_NRM5() {
-    x = y = -3.142;
+    x = y = -3.142M;
     Object obj = new Point(x, y);
     p1 = (Point)obj;
     Assert.AreEqual(x, p1.x);
@@ -75,16 +75,16 @@ public class PointTests {
 
   [Test]
   public void TestIsEqual_NRM3() {
-    p1 = new Point(1.23, -4.56);
-    p2 = new Point(1.23, -4.56);
+    p1 = new Point(1.23M, -4.56M);
+    p2 = new Point(1.23M, -4.56M);
     Assert.True(p1.isEqual(p2));
     Assert.True(p2.isEqual(p1));
   }
 
   [Test]
   public void TestIsEqual_NRM4() {
-    p1 = new Point(1.23, -4.56);
-    p2 = new Point(-1.23, -4.56);
+    p1 = new Point(1.23M, -4.56M);
+    p2 = new Point(-1.23M, -4.56M);
     Assert.False(p1.isEqual(p2));
     Assert.False(p2.isEqual(p1));
   }
@@ -122,8 +122,8 @@ public class PointTests {
 
   [Test]
   public void TestToString_NRM3() {
-    x = -3.142;
-    y = 2.718;
+    x = -3.142M;
+    y = 2.718M;
     p1 = new Point(x, y);
     Assert.AreEqual($"({x},{y})", p1.toString());
   }
