@@ -40,3 +40,13 @@ Run tests:
 ```
 dotnet test -v normal
 ```
+
+## Publish
+Go to PuzzleApp directory:
+```
+cd gic-geometry-puzzle\src\PuzzleApp
+```
+Build as Windows x64 executable file:
+```
+dotnet publish --output ./publish --runtime win-x64 --configuration Release -p:PublishSingleFile=true -p:PublishTrimmed=true --self-contained true
+```
