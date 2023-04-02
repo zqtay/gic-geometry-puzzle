@@ -8,11 +8,11 @@ namespace Geometry {
     /// <summary>
     /// List of vertices on the shape.
     /// </summary>
-    public readonly List<Point> vertices;
+    private List<Point> vertices;
     /// <summary>
     /// List of sides on the shape
     /// </summary>
-    public readonly List<Line> sides;
+    private List<Line> sides;
 
     /// <summary>
     /// Constructor for creating an empty shape instance.
@@ -28,6 +28,22 @@ namespace Geometry {
     /// <returns>A randomly generated shape.</returns>
     public static Shape getRandomShape() {
       return null;
+    }
+
+    /// <summary>
+    /// Get the vertices of the shape
+    /// </summary>
+    /// <returns>List of points</returns>
+    public List<Point> getVertices() {
+      return this.vertices;
+    }
+
+    /// <summary>
+    /// Get the sides of the shape
+    /// </summary>
+    /// <returns>List of lines</returns>
+    public List<Line> getSides() {
+      return this.sides;
     }
 
     /// <summary>
@@ -90,27 +106,16 @@ namespace Geometry {
       }
       if (vertices.Count >= 1) {
         // Error flag
-        bool zError = false;
         // Line = last vertex to p
         Line newLine = new Line(vertices[vertices.Count - 1], p);
         // Check new side is valid
         if (sides.Count >= 1) {
-          if (!this.validateSide(newLine)) zError = true;
+          if (!this.validateSide(newLine)) {
+            throw new GeometryException(GeometryExceptionType.POINT_INVALID);
+          }
         }
-        // If p is possible to form a shape (p is the third vertex)
-        // Also check the line from p to first vertex is valid
-        if (sides.Count >= 2) {
-          Line newLine2 = new Line(p, vertices[0]);
-          if (!this.validateSide(newLine)) zError = true;
-        }
-        // Check error
-        if (zError) {
-          throw new GeometryException(GeometryExceptionType.POINT_INVALID);
-        }
-        else {
-          // New side
-          sides.Add(newLine);
-        }
+        // New side
+        sides.Add(newLine);
       }
       // New point
       vertices.Add(p);
@@ -123,6 +128,9 @@ namespace Geometry {
     /// If shape is not able to be finalized, GeometryException will be thrown.
     /// </summary>
     public void finalize() {
+      if (vertices.Count < 3) {
+        throw new GeometryException(GeometryExceptionType.SHAPE_INCOMPLETE);
+      }
       // Check the line from final vertex to first vertex again
       Point p = vertices[vertices.Count - 1];
       Line newLine = new Line(vertices[vertices.Count - 1], vertices[0]);

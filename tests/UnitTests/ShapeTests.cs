@@ -102,6 +102,7 @@ public class ShapeTests {
       Assert.Fail();
     }
     catch (GeometryException e) {
+      // Same point added
       // Current point to be added is (5, 1)
       Assert.AreEqual(lp[lp.Count - 1], p1);
       Assert.AreEqual(GeometryExceptionType.POINT_INVALID, e.getReason());
@@ -124,6 +125,7 @@ public class ShapeTests {
       Assert.Fail();
     }
     catch (GeometryException e) {
+      // Sides cross each other
       // Current point to be added is (4, 0)
       Assert.AreEqual(lp[lp.Count - 1], p1);
       Assert.AreEqual(GeometryExceptionType.POINT_INVALID, e.getReason());
@@ -131,6 +133,50 @@ public class ShapeTests {
     }
     Assert.Fail();
   }
+
+  [Test]
+  public void TestAddPointFinalize_ERR3() {
+    s1 = new Shape();
+    lp = createListOfPoints(
+      (1, 1), (5, 1)
+    );
+
+    foreach (Point p in lp) {
+      p1 = p;
+      s1.addVertex(p);
+    }
+
+    try {
+      // Not enough vertices to form a shape
+      s1.finalize();
+      Assert.Fail();
+    }
+    catch (GeometryException e) {
+      Assert.AreEqual(GeometryExceptionType.SHAPE_INCOMPLETE, e.getReason());
+      return;
+    }
+  }
+
+  [Test]
+  public void TestAddPointFinalize_ERR4() {
+    s1 = new Shape();
+    lp = createListOfPoints(
+      (0, 0), (0, 1), (1, 0), (1, 1)
+    );
+    foreach (Point p in lp) {
+      p1 = p;
+      s1.addVertex(p);
+    }
+    try {
+      s1.finalize();
+    }
+    catch (GeometryException e) {
+      // Invalid side from (1,1) to (0,0)
+      Assert.AreEqual(GeometryExceptionType.POINT_INVALID, e.getReason());
+      return;
+    }
+  }
+
 
   [Test]
   public void TestIsPointInside_NRM1() {

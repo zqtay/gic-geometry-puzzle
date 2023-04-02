@@ -23,6 +23,7 @@ namespace Geometry {
     LINE_PARALLEL,
     LINE_INVALID,
     INTERSECT_INVALID,
+    SHAPE_INCOMPLETE,
     OPERATION_INVALID
   }
 }
