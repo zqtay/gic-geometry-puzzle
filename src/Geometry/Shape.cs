@@ -1,18 +1,49 @@
 namespace Geometry {
 
+  /// <summary>
+  /// Class for a polygon shape.
+  /// </summary>
   public class Shape {
+
+    /// <summary>
+    /// List of vertices on the shape.
+    /// </summary>
     public readonly List<Point> vertices;
+    /// <summary>
+    /// List of sides on the shape
+    /// </summary>
     public readonly List<Line> sides;
 
+    /// <summary>
+    /// Constructor for creating an empty shape instance.
+    /// </summary>
     public Shape() {
       vertices = new List<Point> { };
       sides = new List<Line> { };
     }
 
+    /// <summary>
+    /// Generate a shape with random vertices.
+    /// </summary>
+    /// <returns>A randomly generated shape.</returns>
     public static Shape getRandomShape() {
       return null;
     }
 
+    /// <summary>
+    /// Initialize the shape. <br />
+    /// This clears the shape vertices and sides.
+    /// </summary>
+    public void init() {
+      vertices = new List<Point> { };
+      sides = new List<Line> { };
+    }
+
+    /// <summary>
+    /// Check if the given point is a vertex on the shape.
+    /// </summary>
+    /// <param name="p">Point to check.</param>
+    /// <returns>true if point is a vertex.</returns>
     public bool vertexExists(Point p) {
       foreach (Point vertex in vertices) {
         if (p.isEqual(vertex)) return true;
@@ -20,6 +51,12 @@ namespace Geometry {
       return false;
     }
 
+    /// <summary>
+    /// Check if the given line is a valid side to be added to the shape.
+    /// </summary>
+    /// <param name="line">Line to be added.</param>
+    /// <param name="zFinal">true if line is the final side for the shape.</param>
+    /// <returns>true if line is valid.</returns>
     public bool validateSide(Line line, bool zFinal = false) {
       IntersectType intType;
       for (int i = 0; i < sides.Count; i++) {
@@ -40,7 +77,13 @@ namespace Geometry {
       return true;
     }
 
-    public void addPoint(Point p) {
+    /// <summary>
+    /// Add a point as vertex to the shape. <br />
+    /// This checks if the given point is valid to be added. <br />
+    /// If not valid, GeometryException will be thrown.
+    /// </summary>
+    /// <param name="p">Point to be added</param>
+    public void addVertex(Point p) {
       // Check whether same vertex already exists
       if (this.vertexExists(p)) {
         throw new GeometryException(GeometryExceptionType.POINT_INVALID);
@@ -73,6 +116,12 @@ namespace Geometry {
       vertices.Add(p);
     }
 
+    /// <summary>
+    /// Finalize a shape. <br />
+    /// This checks if the added vertices are enough to form a shape (minimum 3 vertices). <br />
+    /// This also checks the final vertex to the first vertex is a valid side. <br />
+    /// If shape is not able to be finalized, GeometryException will be thrown.
+    /// </summary>
     public void finalize() {
       // Check the line from final vertex to first vertex again
       Point p = vertices[vertices.Count - 1];
@@ -85,6 +134,16 @@ namespace Geometry {
       }
     }
 
+    /// <summary>
+    /// Check if the given point is inside the shape. <br />
+    /// It is determined by extending a line from the point to the right
+    /// and check how many sides of the shape are being crossed.<br />
+    /// If the number of crossings is odd, the point is inside the shape.
+    /// If even, the point is outside. <br />
+    /// If point lies on the one of the shape vertices or sides, it counts as inside the shape.
+    /// </summary>
+    /// <param name="p">Point to check.</param>
+    /// <returns></returns>
     public bool isPointInside(Point p) {
       // Check p = any of the vertices
       foreach (Point vertex in vertices) {
@@ -157,7 +216,7 @@ namespace Geometry {
             }
             break;
           case IntersectType.POINT_TO_LINE:
-            // Simple case, testLine p2 touches one of the side
+          // Simple case, testLine p2 touches one of the side
           case IntersectType.LINE_TO_LINE:
             // Simple case, testLine and side cross each other
             count++;

@@ -3,7 +3,7 @@ using ExtensionMethods;
 namespace Geometry {
 
   /// <summary>
-  /// Types of line intersection
+  /// Types of line intersection.
   /// </summary>
   public enum IntersectType : ushort {
     NONE = 0, // Not intersecting
@@ -16,24 +16,24 @@ namespace Geometry {
   }
 
   /// <summary>
-  /// Class for linear operation
+  /// Class for linear operation.
   /// </summary>
   public class Line {
     /// <summary>
-    /// Two points make a line
+    /// Two points make a line.
     /// </summary>
     public readonly Point p1, p2;
     // ax + by + c = 0
     /// <summary>
-    /// Coefficients for general linear equation ax + by + c = 0
+    /// Coefficients for general linear equation ax + by + c = 0.
     /// </summary>
     public readonly decimal a, b, c;
 
     /// <summary>
-    /// Constructor with two points
+    /// Constructor with two points.
     /// </summary>
-    /// <param name="p1">Point 1</param>
-    /// <param name="p2">Point 2</param>
+    /// <param name="p1">Point 1.</param>
+    /// <param name="p2">Point 2.</param>
     public Line(Point p1, Point p2) {
       if (p1.isEqual(p2)) {
         throw new GeometryException(GeometryExceptionType.LINE_SAME_ENDPOINTS);
@@ -52,11 +52,11 @@ namespace Geometry {
     }
 
     /// <summary>
-    /// Constructor with coeffficients of linear equation: ax + by + c = 0
+    /// Constructor with coeffficients of linear equation: ax + by + c = 0.
     /// </summary>
-    /// <param name="a">Coeffeicent for x</param>
-    /// <param name="b">Coeffeicent for y</param>
-    /// <param name="c">Constant</param>
+    /// <param name="a">Coeffeicent for x.</param>
+    /// <param name="b">Coeffeicent for y.</param>
+    /// <param name="c">Constant.</param>
     public Line(decimal a, decimal b, decimal c) {
       if (a == 0 && b == 0) {
         throw new GeometryException(GeometryExceptionType.LINE_INVALID);
@@ -69,24 +69,24 @@ namespace Geometry {
     }
 
     /// <summary>
-    /// Check if this line has both endpoints
+    /// Check if this line has both endpoints.
     /// </summary>
-    /// <returns>true if endpoints exist</returns>
+    /// <returns>true if endpoints exist.</returns>
     public bool hasEndPoints() {
       return (this.p1 != null && this.p2 != null);
     }
 
     /// <summary>
-    /// Check if this line is parallel to the given line
+    /// Check if this line is parallel to the given line.
     /// </summary>
-    /// <param name="line">Line to check against</param>
-    /// <returns>true if both lines are parallel</returns>
+    /// <param name="line">Line to check against.</param>
+    /// <returns>true if both lines are parallel.</returns>
     public bool isParallel(Line line) {
       return ((this.a * line.b) - (line.a * this.b)).AlmostEqual(0);
     }
 
     /// <summary>
-    /// Check if this line is co-linear with the given line (exist on the same line)
+    /// Check if this line is co-linear with the given line (exist on the same line).
     /// </summary>
     /// <param name="line">Line to check against</param>
     /// <returns>true if both lines are colinear</returns>
@@ -97,11 +97,11 @@ namespace Geometry {
     }
 
     /// <summary>
-    /// Check if any of the endpoints of this line is connected to the other line's
-    /// This method does not differentiate between one or both points connected
+    /// Check if any of the endpoints of this line is connected to the other line's. <br />
+    /// This method does not differentiate between one or both points connected.
     /// </summary>
-    /// <param name="line">Line to check against</param>
-    /// <returns>true if any endpoints are connected</returns>
+    /// <param name="line">Line to check against.</param>
+    /// <returns>true if any endpoints are connected.</returns>
     public bool isPointConnected(Line line) {
       if (!this.hasEndPoints() || !line.hasEndPoints()) {
         throw new GeometryException(GeometryExceptionType.LINE_NO_ENDPOINTS);
@@ -111,10 +111,10 @@ namespace Geometry {
     }
 
     /// <summary>
-    /// Check if this line is equivalent to the given line
+    /// Check if this line is equivalent to the given line.
     /// </summary>
-    /// <param name="line">Line to check against</param>
-    /// <returns>true if both lines are equivalent</returns>
+    /// <param name="line">Line to check against.</param>
+    /// <returns>true if both lines are equivalent.</returns>
     public bool isEqual(Line line) {
       if (this.hasEndPoints() && line.hasEndPoints()) {
         // Compare endpoints if exist
@@ -156,11 +156,11 @@ namespace Geometry {
     }
 
     /// <summary>
-    /// Get the intersecting point of this line and given line
-    /// Both lines must not be parallel
+    /// Get the intersecting point of this line and given line. <br />
+    /// Both lines must not be parallel.
     /// </summary>
-    /// <param name="line">Line to check against</param>
-    /// <returns>Point of intersection</returns>
+    /// <param name="line">Line to check against.</param>
+    /// <returns>Point of intersection.</returns>
     public Point getIntersectPoint(Line line) {
       decimal ab = (this.a * line.b) - (line.a * this.b);
       decimal bc = (this.b * line.c) - (line.b * this.c);
@@ -172,10 +172,10 @@ namespace Geometry {
     }
 
     /// <summary>
-    /// Check if this line is intersecting with the given line
+    /// Check if this line is intersecting with the given line.
     /// </summary>
-    /// <param name="line">Line to check against</param>
-    /// <returns>Type of intersection IntersectType</returns>
+    /// <param name="line">Line to check against.</param>
+    /// <returns>Type of intersection IntersectType.</returns>
     public IntersectType getIntersectType(Line line) {
       bool zParallel = this.isParallel(line);
       bool zColinear = this.isColinear(line);
@@ -252,10 +252,10 @@ namespace Geometry {
     }
 
     /// <summary>
-    /// Check whether a point is on the line
+    /// Check whether a point is on the line.
     /// </summary>
-    /// <param name="p">Point to be checked</param>
-    /// <returns>true if point is on the line and within boundaries</returns>
+    /// <param name="p">Point to be checked.</param>
+    /// <returns>true if point is on the line and within boundaries.</returns>
     public bool checkPoint(Point p) {
       // Check if the point is on the extrapolated line
       bool result = (this.a * p.x + this.b * p.y + this.c).AlmostEqual(0);
@@ -268,9 +268,9 @@ namespace Geometry {
     }
 
     /// <summary>
-    /// Get the slope of the line
+    /// Get the slope of the line.
     /// </summary>
-    /// <returns></returns>
+    /// <returns>Slope of the line.</returns>
     public decimal getSlope() {
       return -(this.a / this.b);
     }

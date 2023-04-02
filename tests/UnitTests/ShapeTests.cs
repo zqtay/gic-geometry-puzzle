@@ -23,7 +23,7 @@ public class ShapeTests {
     Shape s = new Shape();
     lp = createListOfPoints(coords);
     foreach (Point p in lp) {
-      s.addPoint(p);
+      s.addVertex(p);
     }
     s.finalize();
     return s;
@@ -44,7 +44,7 @@ public class ShapeTests {
     s1 = new Shape();
     lp = createListOfPoints((0, 0), (1, 1), (1, 0));
     foreach (Point p in lp) {
-      s1.addPoint(p);
+      s1.addVertex(p);
     }
     s1.finalize();
     Assert.Pass();
@@ -62,7 +62,7 @@ public class ShapeTests {
       (1, 1), (5, 1), (5, 5)
     );
     foreach (Point p in lp) {
-      s1.addPoint(p);
+      s1.addVertex(p);
     }
     s1.finalize();
     Assert.Pass();
@@ -81,7 +81,7 @@ public class ShapeTests {
       (3, 1), (2, 1), (2, -1), (1, 0), (0, -1), (-1, 0)
     );
     foreach (Point p in lp) {
-      s1.addPoint(p);
+      s1.addVertex(p);
     }
     s1.finalize();
     Assert.Pass();
@@ -97,11 +97,12 @@ public class ShapeTests {
     try {
       foreach (Point p in lp) {
         p1 = p;
-        s1.addPoint(p);
+        s1.addVertex(p);
       }
       Assert.Fail();
     }
     catch (GeometryException e) {
+      // Current point to be added is (5, 1)
       Assert.AreEqual(lp[lp.Count - 1], p1);
       Assert.AreEqual(GeometryExceptionType.POINT_INVALID, e.getReason());
       return;
@@ -118,11 +119,12 @@ public class ShapeTests {
     try {
       foreach (Point p in lp) {
         p1 = p;
-        s1.addPoint(p);
+        s1.addVertex(p);
       }
       Assert.Fail();
     }
     catch (GeometryException e) {
+      // Current point to be added is (4, 0)
       Assert.AreEqual(lp[lp.Count - 1], p1);
       Assert.AreEqual(GeometryExceptionType.POINT_INVALID, e.getReason());
       return;
@@ -154,7 +156,7 @@ public class ShapeTests {
       (5, 1), (6, 2), (5, 4), (4, 3), (3, 4), (2, 3)
     );
     foreach (Point p in lp) {
-      s1.addPoint(p);
+      s1.addVertex(p);
     }
     s1.finalize();
 
