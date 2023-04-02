@@ -177,6 +177,48 @@ public class ShapeTests {
     }
   }
 
+  [Test]
+  public void TestAddPointFinalize_ERR5() {
+    s1 = new Shape();
+    lp = createListOfPoints(
+      (-71, -51), (51, 69), (41, -71), (17, -32), (-75, -16)
+    );
+    try {
+      foreach (Point p in lp) {
+        p1 = p;
+        s1.addVertex(p);
+      }
+      Assert.Fail();
+    }
+    catch (GeometryException e) {
+      // (17, -32), (-75, -16) crosses (-71, -51), (51, 69)
+      // Current point to be added is (-75, -16)
+      Assert.AreEqual(lp[lp.Count - 1], p1);
+      Assert.AreEqual(GeometryExceptionType.POINT_INVALID, e.getReason());
+      return;
+    }
+  }
+
+  [Test]
+  public void TestAddPointFinalize_ERR6() {
+    s1 = new Shape();
+    lp = createListOfPoints(
+      (62, 18), (-22, 86), (88, 0), (97, 30)
+    );
+    foreach (Point p in lp) {
+      p1 = p;
+      s1.addVertex(p);
+    }
+    try {
+      s1.finalize();
+      Assert.Fail();
+    }
+    catch (GeometryException e) {
+      // (97, 30), (62, 18) crosses (-22, 86), (88, 0)
+      Assert.AreEqual(GeometryExceptionType.POINT_INVALID, e.getReason());
+      return;
+    }
+  }
 
   [Test]
   public void TestIsPointInside_NRM1() {
@@ -248,5 +290,15 @@ public class ShapeTests {
     Assert.False(s1.isPointInside(createPoint(6, -2)));
     Assert.False(s1.isPointInside(createPoint(6, 1)));
     Assert.False(s1.isPointInside(createPoint(7, 2)));
+  }
+
+  [Test]
+  public void TestGenRandom_NRM1() {
+    for (int i = 0; i < 10000; i++) {
+      s1 = Shape.genRandom();
+      Assert.AreNotEqual(null, s1);
+      Assert.AreEqual(typeof(Shape), s1.GetType());
+    }
+    Assert.Pass();
   }
 }

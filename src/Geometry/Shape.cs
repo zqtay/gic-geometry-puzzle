@@ -4,6 +4,30 @@ namespace Geometry {
   /// Class for a polygon shape.
   /// </summary>
   public class Shape {
+    /// <summary>
+    /// Minimum number of vertices for generating random shape.
+    /// </summary>
+    public const int RANDOM_VERTICES_MIN = 3;
+    /// <summary>
+    /// Maximum number of vertices for generating random shape.
+    /// </summary>
+    public const int RANDOM_VERTICES_MAX = 8;
+    /// <summary>
+    /// Canvas size boundaries for generating random shape, minimum x.
+    /// </summary>
+    public const int RANDOM_CANVAS_SIZE_MIN_X = -100;
+    /// <summary>
+    /// Canvas size boundaries for generating random shape, maximum x.
+    /// </summary>
+    public const int RANDOM_CANVAS_SIZE_MAX_X = 100;
+    /// <summary>
+    /// Canvas size boundaries for generating random shape, minimum y.
+    /// </summary>
+    public const int RANDOM_CANVAS_SIZE_MIN_Y = -100;
+    /// <summary>
+    /// Canvas size boundaries for generating random shape, maximum y.
+    /// </summary>
+    public const int RANDOM_CANVAS_SIZE_MAX_Y = 100;
 
     /// <summary>
     /// List of vertices on the shape.
@@ -26,8 +50,62 @@ namespace Geometry {
     /// Generate a shape with random vertices.
     /// </summary>
     /// <returns>A randomly generated shape.</returns>
-    public static Shape getRandomShape() {
-      return null;
+    public static Shape genRandom() {
+      // Random number generator
+      Random rnd = new Random();
+      // Number of vertices
+      int nVertices = rnd.Next(RANDOM_VERTICES_MIN, RANDOM_VERTICES_MAX + 1);
+      // x, y coordinates for new random point
+      // i current loop index
+      int x, y, i = 0;
+      // New point
+      Point p;
+      // New shape
+      Shape s = new Shape();
+      // Current error count
+      int errCount = 0;
+      // Max number of error count allowed before resetting the shape
+      int maxErrCount = 10;
+      // Add vertices one by one
+      while (i <= nVertices) {
+        if (errCount >= maxErrCount) {
+          // Reset shape
+          s.init();
+          i = 0;
+          errCount = 0;
+        }
+        if (i < nVertices) {
+          // Generate random point
+          x = rnd.Next(RANDOM_CANVAS_SIZE_MIN_X, RANDOM_CANVAS_SIZE_MAX_X + 1);
+          y = rnd.Next(RANDOM_CANVAS_SIZE_MIN_Y, RANDOM_CANVAS_SIZE_MAX_Y + 1);
+          p = new Point(x, y);
+          try {
+            s.addVertex(p);
+            i++;
+          }
+          catch (GeometryException e) {
+            // Invalid point to be added, try another random point
+            errCount++;
+            continue;
+          }
+        }
+        else if (i == nVertices) {
+          // Finalize shape here
+          try {
+            s.finalize();
+            // Shape is finalized
+            break;
+          }
+          catch (GeometryException e) {
+            // Invalid point to be added, revert last added point
+            errCount++;
+            s.vertices.RemoveAt(s.vertices.Count - 1);
+            s.sides.RemoveAt(s.sides.Count - 1);
+            i--;
+          }
+        }
+      }
+      return s;
     }
 
     /// <summary>
