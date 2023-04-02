@@ -234,7 +234,6 @@ public class ShapeTests {
     Assert.False(s1.isPointInside(p1));
   }
 
-
   [Test]
   public void TestIsPointInside_NRM3() {
     // Create shape
@@ -290,6 +289,27 @@ public class ShapeTests {
     Assert.False(s1.isPointInside(createPoint(6, -2)));
     Assert.False(s1.isPointInside(createPoint(6, 1)));
     Assert.False(s1.isPointInside(createPoint(7, 2)));
+  }
+
+  [Test]
+  public void TestIsPointInside_ERR1() {
+    s1 = new Shape();
+    lp = createListOfPoints(
+      (1, 1), (5, 1), (5, 5)
+    );
+    foreach (Point p in lp) {
+      s1.addVertex(p);
+    }
+    p1 = createPoint(1, 1);
+    try {
+      s1.isPointInside(p1);
+      Assert.Fail();
+    }
+    catch (GeometryException e) {
+      // Shape is not finalized
+      Assert.AreEqual(GeometryExceptionType.SHAPE_NOT_FINALIZED, e.getReason());
+      return;
+    }
   }
 
   [Test]

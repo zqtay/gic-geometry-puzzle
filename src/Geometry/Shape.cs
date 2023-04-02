@@ -7,7 +7,7 @@ namespace Geometry {
     /// <summary>
     /// Minimum number of vertices for generating random shape.
     /// </summary>
-    public const int RANDOM_VERTICES_MIN = 3;
+    public const int VERTICES_MIN = 3;
     /// <summary>
     /// Maximum number of vertices for generating random shape.
     /// </summary>
@@ -37,6 +37,10 @@ namespace Geometry {
     /// List of sides on the shape
     /// </summary>
     private List<Line> sides;
+    /// <summary>
+    /// Flag to indicate if shape is finalized
+    /// </summary>
+    private bool zFinal;
 
     /// <summary>
     /// Constructor for creating an empty shape instance.
@@ -44,17 +48,18 @@ namespace Geometry {
     public Shape() {
       vertices = new List<Point> { };
       sides = new List<Line> { };
+      zFinal = false;
     }
 
     /// <summary>
     /// Generate a shape with random vertices.
     /// </summary>
     /// <returns>A randomly generated shape.</returns>
-    public static Shape genRandom() {
+    public static Shape genRandom(int maxVertices=RANDOM_VERTICES_MAX) {
       // Random number generator
       Random rnd = new Random();
       // Number of vertices
-      int nVertices = rnd.Next(RANDOM_VERTICES_MIN, RANDOM_VERTICES_MAX + 1);
+      int nVertices = rnd.Next(VERTICES_MIN, maxVertices + 1);
       // x, y coordinates for new random point
       // i current loop index
       int x, y, i = 0;
@@ -200,20 +205,37 @@ namespace Geometry {
     }
 
     /// <summary>
+    /// Check is current shape valid to be finalized. <br />
+    /// This checks if the added vertices are enough to form a shape (minimum 3 vertices). <br />
+    /// This also checks the final vertex to the first vertex is a valid side. <br />
+    /// </summary>
+    /// <returns>true if shape is valid and ready to be finalized.</returns>
+    public bool isShapeValidFinal() {
+      if (vertices.Count < VERTICES_MIN) return false;
+      Point p = vertices[vertices.Count - 1];
+      Line newLine = new Line(vertices[vertices.Count - 1], vertices[0]);
+      if (this.validateSide(newLine, true)) return true;
+      else return false;
+    }
+
+    /// <summary>
     /// Finalize a shape. <br />
     /// This checks if the added vertices are enough to form a shape (minimum 3 vertices). <br />
     /// This also checks the final vertex to the first vertex is a valid side. <br />
     /// If shape is not able to be finalized, GeometryException will be thrown.
     /// </summary>
     public void finalize() {
-      if (vertices.Count < 3) {
+      if (vertices.Count < VERTICES_MIN) {
         throw new GeometryException(GeometryExceptionType.SHAPE_INCOMPLETE);
       }
-      // Check the line from final vertex to first vertex again
       Point p = vertices[vertices.Count - 1];
       Line newLine = new Line(vertices[vertices.Count - 1], vertices[0]);
+      // Validate new side
       if (this.validateSide(newLine, true)) {
-        sides.Add(newLine);
+        // Add final side
+        sides.Add(new Line(vertices[vertices.Count - 1], vertices[0]));
+        // Set final flag to true
+        this.zFinal = true;
       }
       else {
         throw new GeometryException(GeometryExceptionType.POINT_INVALID);
@@ -231,6 +253,9 @@ namespace Geometry {
     /// <param name="p">Point to check.</param>
     /// <returns></returns>
     public bool isPointInside(Point p) {
+      // Shape is not finalized
+      if (zFinal != true) throw new GeometryException(GeometryExceptionType.SHAPE_NOT_FINALIZED);
+
       // Check p = any of the vertices
       foreach (Point vertex in vertices) {
         if (p.isEqual(vertex)) return true;

@@ -171,7 +171,7 @@ namespace PuzzleApp {
 
     private GameState generateRandomShape() {
       // Generate random shape shape
-      this.shape = Shape.genRandom();
+      this.shape = Shape.genRandom(RANDOM_SHAPE_VERTICES_MAX);
 
       // Display vertices
       Console.WriteLine("Your random shape is");
