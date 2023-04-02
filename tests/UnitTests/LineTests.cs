@@ -3,13 +3,21 @@ using Geometry;
 namespace UnitTests;
 
 public class LineTests {
-  Point p1;
-  Point p2;
-  Line l1;
-  Line l2;
+  Point? p1;
+  Point? p2;
+  Line? l1;
+  Line? l2;
 
   [SetUp]
   public void Setup() {
+  }
+
+  [TearDown]
+  public void TearDown() {
+    p1 = null;
+    p2 = null;
+    l1 = null;
+    l2 = null;
   }
 
   [Test]
@@ -20,9 +28,9 @@ public class LineTests {
     l1 = new Line(p1, p2);
     Assert.True(l1.p1.isEqual(p1));
     Assert.True(l1.p2.isEqual(p2));
-    Assert.AreEqual(0, l1.a);
-    Assert.AreEqual(1, l1.b);
-    Assert.AreEqual(0, l1.c);
+    Assert.That(l1.a, Is.EqualTo(0));
+    Assert.That(l1.b, Is.EqualTo(1));
+    Assert.That(l1.c, Is.EqualTo(0));
   }
 
   [Test]
@@ -33,9 +41,9 @@ public class LineTests {
     l1 = new Line(p1, p2);
     Assert.True(l1.p1.isEqual(p1));
     Assert.True(l1.p2.isEqual(p2));
-    Assert.AreEqual(11.48M, l1.a);
-    Assert.AreEqual(10.2M, l1.b);
-    Assert.AreEqual(-13.754M, l1.c);
+    Assert.That(l1.a, Is.EqualTo(11.48M));
+    Assert.That(l1.b, Is.EqualTo(10.2M));
+    Assert.That(l1.c, Is.EqualTo(-13.754M));
   }
 
   [Test]
@@ -46,9 +54,9 @@ public class LineTests {
     l1 = new Line(p1, p2);
     Assert.True(l1.p1.isEqual(p1));
     Assert.True(l1.p2.isEqual(p2));
-    Assert.AreEqual(16, l1.a);
-    Assert.AreEqual(0, l1.b);
-    Assert.AreEqual(-88, l1.c);
+    Assert.That(l1.a, Is.EqualTo(16));
+    Assert.That(l1.b, Is.EqualTo(0));
+    Assert.That(l1.c, Is.EqualTo(-88));
   }
 
   [Test]
@@ -57,9 +65,9 @@ public class LineTests {
     l1 = new Line(1, 2, 3);
     Assert.True(l1.p1 == null);
     Assert.True(l1.p2 == null);
-    Assert.AreEqual(1, l1.a);
-    Assert.AreEqual(2, l1.b);
-    Assert.AreEqual(3, l1.c);
+    Assert.That(l1.a, Is.EqualTo(1));
+    Assert.That(l1.b, Is.EqualTo(2));
+    Assert.That(l1.c, Is.EqualTo(3));
   }
 
   [Test]
@@ -68,9 +76,9 @@ public class LineTests {
     l1 = new Line(-2.5M, -7.43M, 9.1M);
     Assert.True(l1.p1 == null);
     Assert.True(l1.p2 == null);
-    Assert.AreEqual(-2.5M, l1.a);
-    Assert.AreEqual(-7.43M, l1.b);
-    Assert.AreEqual(9.1M, l1.c);
+    Assert.That(l1.a, Is.EqualTo(-2.5M));
+    Assert.That(l1.b, Is.EqualTo(-7.43M));
+    Assert.That(l1.c, Is.EqualTo(9.1M));
   }
 
   [Test]
@@ -415,14 +423,14 @@ public class LineTests {
     p2 = new Point(7.89M, -0.12M);
     l1 = new Line(p1, p2);
     decimal slope = (-0.12M + 4.56M) / (7.89M - 1.23M);
-    Assert.AreEqual(slope, l1.getSlope());
+    Assert.That(l1.getSlope(), Is.EqualTo(slope));
   }
 
   [Test]
   public void TestGetSlope_NRM2() {
     l1 = new Line(1.23M, -4.56M, 7.89M);
     decimal slope = 1.23M / 4.56M;
-    Assert.AreEqual(slope, l1.getSlope());
+    Assert.That(l1.getSlope(), Is.EqualTo(slope));
   }
 
   [Test]
@@ -508,8 +516,8 @@ public class LineTests {
     p1 = new Point(1, 2);
     p2 = new Point(2, 2);
     l2 = new Line(p1, p2);
-    Assert.AreEqual(IntersectType.NONE, l1.getIntersectType(l2));
-    Assert.AreEqual(IntersectType.NONE, l2.getIntersectType(l1));
+    Assert.That(l1.getIntersectType(l2), Is.EqualTo(IntersectType.NONE));
+    Assert.That(l2.getIntersectType(l1), Is.EqualTo(IntersectType.NONE));
   }
 
   [Test]
@@ -521,8 +529,8 @@ public class LineTests {
     p1 = new Point(0, 1);
     p2 = new Point(1, 2);
     l2 = new Line(p1, p2);
-    Assert.AreEqual(IntersectType.NONE, l1.getIntersectType(l2));
-    Assert.AreEqual(IntersectType.NONE, l2.getIntersectType(l1));
+    Assert.That(l1.getIntersectType(l2), Is.EqualTo(IntersectType.NONE));
+    Assert.That(l2.getIntersectType(l1), Is.EqualTo(IntersectType.NONE));
   }
 
   [Test]
@@ -534,8 +542,8 @@ public class LineTests {
     p1 = new Point(2, 0);
     p2 = new Point(1, 1);
     l2 = new Line(p1, p2);
-    Assert.AreEqual(IntersectType.POINT_TO_POINT, l1.getIntersectType(l2));
-    Assert.AreEqual(IntersectType.POINT_TO_POINT, l2.getIntersectType(l1));
+    Assert.That(l1.getIntersectType(l2), Is.EqualTo(IntersectType.POINT_TO_POINT));
+    Assert.That(l2.getIntersectType(l1), Is.EqualTo(IntersectType.POINT_TO_POINT));
   }
 
   [Test]
@@ -547,8 +555,8 @@ public class LineTests {
     p1 = new Point(1, 1);
     p2 = new Point(2, 2);
     l2 = new Line(p1, p2);
-    Assert.AreEqual(IntersectType.POINT_TO_POINT, l1.getIntersectType(l2));
-    Assert.AreEqual(IntersectType.POINT_TO_POINT, l2.getIntersectType(l1));
+    Assert.That(l1.getIntersectType(l2), Is.EqualTo(IntersectType.POINT_TO_POINT));
+    Assert.That(l2.getIntersectType(l1), Is.EqualTo(IntersectType.POINT_TO_POINT));
   }
 
   [Test]
@@ -560,8 +568,8 @@ public class LineTests {
     p1 = new Point(0, 1);
     p2 = new Point(2, 1);
     l2 = new Line(p1, p2);
-    Assert.AreEqual(IntersectType.POINT_TO_LINE, l1.getIntersectType(l2));
-    Assert.AreEqual(IntersectType.LINE_TO_POINT, l2.getIntersectType(l1));
+    Assert.That(l1.getIntersectType(l2), Is.EqualTo(IntersectType.POINT_TO_LINE));
+    Assert.That(l2.getIntersectType(l1), Is.EqualTo(IntersectType.LINE_TO_POINT));
   }
 
   [Test]
@@ -573,8 +581,8 @@ public class LineTests {
     p1 = new Point(-5, 4);
     p2 = new Point(3, 6);
     l2 = new Line(p1, p2);
-    Assert.AreEqual(IntersectType.LINE_TO_POINT, l1.getIntersectType(l2));
-    Assert.AreEqual(IntersectType.POINT_TO_LINE, l2.getIntersectType(l1));
+    Assert.That(l1.getIntersectType(l2), Is.EqualTo(IntersectType.LINE_TO_POINT));
+    Assert.That(l2.getIntersectType(l1), Is.EqualTo(IntersectType.POINT_TO_LINE));
   }
 
   [Test]
@@ -586,8 +594,8 @@ public class LineTests {
     p1 = new Point(1, 0);
     p2 = new Point(0, 1);
     l2 = new Line(p1, p2);
-    Assert.AreEqual(IntersectType.LINE_TO_LINE, l1.getIntersectType(l2));
-    Assert.AreEqual(IntersectType.LINE_TO_LINE, l2.getIntersectType(l1));
+    Assert.That(l1.getIntersectType(l2), Is.EqualTo(IntersectType.LINE_TO_LINE));
+    Assert.That(l2.getIntersectType(l1), Is.EqualTo(IntersectType.LINE_TO_LINE));
   }
 
   [Test]
@@ -599,8 +607,8 @@ public class LineTests {
     p1 = new Point(-5, 4);
     p2 = new Point(3, 6);
     l2 = new Line(p1, p2);
-    Assert.AreEqual(IntersectType.LINE_TO_LINE, l1.getIntersectType(l2));
-    Assert.AreEqual(IntersectType.LINE_TO_LINE, l2.getIntersectType(l1));
+    Assert.That(l1.getIntersectType(l2), Is.EqualTo(IntersectType.LINE_TO_LINE));
+    Assert.That(l2.getIntersectType(l1), Is.EqualTo(IntersectType.LINE_TO_LINE));
   }
 
   [Test]
@@ -612,8 +620,8 @@ public class LineTests {
     p1 = new Point(5, 5);
     p2 = new Point(3, 3);
     l2 = new Line(p1, p2);
-    Assert.AreEqual(IntersectType.OVERLAP, l1.getIntersectType(l2));
-    Assert.AreEqual(IntersectType.OVERLAP, l2.getIntersectType(l1));
+    Assert.That(l1.getIntersectType(l2), Is.EqualTo(IntersectType.OVERLAP));
+    Assert.That(l2.getIntersectType(l1), Is.EqualTo(IntersectType.OVERLAP));
   }
 
   [Test]
@@ -625,8 +633,8 @@ public class LineTests {
     p1 = new Point(5, 0);
     p2 = new Point(3, 2);
     l2 = new Line(p1, p2);
-    Assert.AreEqual(IntersectType.OVERLAP, l1.getIntersectType(l2));
-    Assert.AreEqual(IntersectType.OVERLAP, l2.getIntersectType(l1));
+    Assert.That(l1.getIntersectType(l2), Is.EqualTo(IntersectType.OVERLAP));
+    Assert.That(l2.getIntersectType(l1), Is.EqualTo(IntersectType.OVERLAP));
   }
 
   [Test]
@@ -638,7 +646,7 @@ public class LineTests {
     p1 = new Point(-6, 3);
     p2 = new Point(-2, 5);
     l2 = new Line(p1, p2);
-    Assert.AreEqual(IntersectType.EQUIVALENT, l1.getIntersectType(l2));
-    Assert.AreEqual(IntersectType.EQUIVALENT, l2.getIntersectType(l1));
+    Assert.That(l1.getIntersectType(l2), Is.EqualTo(IntersectType.EQUIVALENT));
+    Assert.That(l2.getIntersectType(l1), Is.EqualTo(IntersectType.EQUIVALENT));
   }
 }

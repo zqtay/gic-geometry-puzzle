@@ -3,12 +3,19 @@ using Geometry;
 namespace UnitTests;
 
 public class ShapeTests {
-  Shape s1;
-  Point p1;
-  List<Point> lp;
+  Shape? s1;
+  Point? p1;
+  List<Point>? lp;
 
   [SetUp]
   public void Setup() {
+  }
+
+  [TearDown]
+  public void TearDown() {
+    s1 = null;
+    p1 = null;
+    lp = null;
   }
 
   public List<Point> createListOfPoints(params (decimal, decimal)[] coords) {
@@ -36,7 +43,7 @@ public class ShapeTests {
   [Test]
   public void TestConstructor_NRM1() {
     s1 = new Shape();
-    Assert.AreEqual(typeof(Shape), s1.GetType());
+    Assert.That(s1.GetType(), Is.EqualTo(typeof(Shape)));
   }
 
   [Test]
@@ -104,8 +111,8 @@ public class ShapeTests {
     catch (GeometryException e) {
       // Same point added
       // Current point to be added is (5, 1)
-      Assert.AreEqual(lp[lp.Count - 1], p1);
-      Assert.AreEqual(GeometryExceptionType.POINT_INVALID, e.getReason());
+      Assert.That(p1, Is.EqualTo(lp[lp.Count - 1]));
+      Assert.That(e.getReason(), Is.EqualTo(GeometryExceptionType.POINT_INVALID));
       return;
     }
   }
@@ -127,8 +134,8 @@ public class ShapeTests {
     catch (GeometryException e) {
       // Sides cross each other
       // Current point to be added is (4, 0)
-      Assert.AreEqual(lp[lp.Count - 1], p1);
-      Assert.AreEqual(GeometryExceptionType.POINT_INVALID, e.getReason());
+      Assert.That(p1, Is.EqualTo(lp[lp.Count - 1]));
+      Assert.That(e.getReason(), Is.EqualTo(GeometryExceptionType.POINT_INVALID));
       return;
     }
     Assert.Fail();
@@ -152,7 +159,7 @@ public class ShapeTests {
       Assert.Fail();
     }
     catch (GeometryException e) {
-      Assert.AreEqual(GeometryExceptionType.SHAPE_INCOMPLETE, e.getReason());
+      Assert.That(e.getReason(), Is.EqualTo(GeometryExceptionType.SHAPE_INCOMPLETE));
       return;
     }
   }
@@ -172,7 +179,7 @@ public class ShapeTests {
     }
     catch (GeometryException e) {
       // Invalid side from (1,1) to (0,0)
-      Assert.AreEqual(GeometryExceptionType.POINT_INVALID, e.getReason());
+      Assert.That(e.getReason(), Is.EqualTo(GeometryExceptionType.POINT_INVALID));
       return;
     }
   }
@@ -193,8 +200,8 @@ public class ShapeTests {
     catch (GeometryException e) {
       // (17, -32), (-75, -16) crosses (-71, -51), (51, 69)
       // Current point to be added is (-75, -16)
-      Assert.AreEqual(lp[lp.Count - 1], p1);
-      Assert.AreEqual(GeometryExceptionType.POINT_INVALID, e.getReason());
+      Assert.That(p1, Is.EqualTo(lp[lp.Count - 1]));
+      Assert.That(e.getReason(), Is.EqualTo(GeometryExceptionType.POINT_INVALID));
       return;
     }
   }
@@ -215,7 +222,7 @@ public class ShapeTests {
     }
     catch (GeometryException e) {
       // (97, 30), (62, 18) crosses (-22, 86), (88, 0)
-      Assert.AreEqual(GeometryExceptionType.POINT_INVALID, e.getReason());
+      Assert.That(e.getReason(), Is.EqualTo(GeometryExceptionType.POINT_INVALID));
       return;
     }
   }
@@ -307,7 +314,7 @@ public class ShapeTests {
     }
     catch (GeometryException e) {
       // Shape is not finalized
-      Assert.AreEqual(GeometryExceptionType.SHAPE_NOT_FINALIZED, e.getReason());
+      Assert.That(e.getReason(), Is.EqualTo(GeometryExceptionType.SHAPE_NOT_FINALIZED));
       return;
     }
   }
@@ -316,8 +323,8 @@ public class ShapeTests {
   public void TestGenRandom_NRM1() {
     for (int i = 0; i < 10000; i++) {
       s1 = Shape.genRandom();
-      Assert.AreNotEqual(null, s1);
-      Assert.AreEqual(typeof(Shape), s1.GetType());
+      Assert.That(s1, Is.Not.EqualTo(null));
+      Assert.That(s1.GetType(), Is.EqualTo(typeof(Shape)));
     }
     Assert.Pass();
   }

@@ -3,8 +3,8 @@ using Geometry;
 namespace UnitTests;
 
 public class PointTests {
-  Point p1;
-  Point p2;
+  Point? p1;
+  Point? p2;
   decimal x;
   decimal y;
 
@@ -12,13 +12,21 @@ public class PointTests {
   public void Setup() {
   }
 
+  [TearDown]
+  public void TearDown() {
+    p1 = null;
+    p2 = null;
+    x = 0;
+    y = 0;
+  }
+
   [Test]
   public void TestConstructor_NRM1() {
     x = 10;
     y = 20;
     p1 = new Point(x, y);
-    Assert.AreEqual(x, p1.x);
-    Assert.AreEqual(y, p1.y);
+    Assert.That(p1.x, Is.EqualTo(x));
+    Assert.That(p1.y, Is.EqualTo(y));
   }
 
   [Test]
@@ -26,8 +34,8 @@ public class PointTests {
     x = -10;
     y = -20;
     p1 = new Point(x, y);
-    Assert.AreEqual(x, p1.x);
-    Assert.AreEqual(y, p1.y);
+    Assert.That(p1.x, Is.EqualTo(x));
+    Assert.That(p1.y, Is.EqualTo(y));
   }
 
   [Test]
@@ -35,8 +43,8 @@ public class PointTests {
     x = 3.142M;
     y = 2.718M;
     p1 = new Point(x, y);
-    Assert.AreEqual(x, p1.x);
-    Assert.AreEqual(y, p1.y);
+    Assert.That(p1.x, Is.EqualTo(x));
+    Assert.That(p1.y, Is.EqualTo(y));
   }
 
   [Test]
@@ -44,8 +52,8 @@ public class PointTests {
     x = Int32.Parse("123");
     y = Int32.Parse("-456");
     p1 = new Point(x, y);
-    Assert.AreEqual(x, p1.x);
-    Assert.AreEqual(y, p1.y);
+    Assert.That(p1.x, Is.EqualTo(x));
+    Assert.That(p1.y, Is.EqualTo(y));
   }
 
   [Test]
@@ -53,8 +61,8 @@ public class PointTests {
     x = y = -3.142M;
     Object obj = new Point(x, y);
     p1 = (Point)obj;
-    Assert.AreEqual(x, p1.x);
-    Assert.AreEqual(y, p1.y);
+    Assert.That(p1.x, Is.EqualTo(x));
+    Assert.That(p1.y, Is.EqualTo(y));
   }
 
   [Test]
@@ -109,7 +117,7 @@ public class PointTests {
     x = 0;
     y = 0;
     p1 = new Point(x, y);
-    Assert.AreEqual( $"({x},{y})", p1.toString());
+    Assert.That(p1.toString(), Is.EqualTo($"({x},{y})"));
   }
 
   [Test]
@@ -117,7 +125,7 @@ public class PointTests {
     x = -30;
     y = -40;
     p1 = new Point(x, y);
-    Assert.AreEqual( $"({x},{y})", p1.toString());
+    Assert.That(p1.toString(), Is.EqualTo($"({x},{y})"));
   }
 
   [Test]
@@ -125,6 +133,6 @@ public class PointTests {
     x = -3.142M;
     y = 2.718M;
     p1 = new Point(x, y);
-    Assert.AreEqual($"({x},{y})", p1.toString());
+    Assert.That(p1.toString(), Is.EqualTo($"({x},{y})"));
   }
 }
