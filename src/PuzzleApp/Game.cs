@@ -3,22 +3,46 @@ using System.Collections.Generic;
 using Geometry;
 
 namespace PuzzleApp {
+  /// <summary>
+  /// Class for running and managing game session
+  /// </summary>
   public class Game {
+    /// <summary>
+    /// Maximum number of vertices allowed for randomly generated shape
+    /// </summary>
+    private const int RANDOM_SHAPE_VERTICES_MAX = 8;
+
+    /// <summary>
+    /// Game states
+    /// </summary>
     private enum GameState : ushort {
-      INTRO = 0,
-      CUSTOM_SHAPE,
-      RANDOM_SHAPE,
-      PUZZLE,
-      QUIT
+      INTRO = 0, // Start of game, choose mode
+      CUSTOM_SHAPE, // Step for creating a custom shape
+      RANDOM_SHAPE, // Step for generating a random shape
+      PUZZLE, // Puzzle playing step
+      QUIT // Quit game
     };
 
+    /// <summary>
+    /// Instance of Shape to be interacted with during game session
+    /// </summary>
     private Shape shape;
+    /// <summary>
+    /// Indicates current game state
+    /// </summary>
     private GameState state = GameState.INTRO;
 
+    /// <summary>
+    /// Constructs a new game instance
+    /// </summary>
     public Game() {
+      this.state = GameState.INTRO;
       this.shape = null;
     }
 
+    /// <summary>
+    /// Helper function to print current shape vertices
+    /// </summary>
     private void printShapeVertices() {
       if (this.shape == null) {
         // Shape not initialized
@@ -34,10 +58,19 @@ namespace PuzzleApp {
       }
     }
 
+    /// <summary>
+    /// Helper function to print invalid input message
+    /// </summary>
+    /// <param name="input"></param>
     private void printInvalidInputMessage(String input) {
       Console.WriteLine($"Sorry, \"{input}\" is not a valid input\n");
     }
 
+    /// <summary>
+    /// Main method. This starts the game session in console. <br />
+    /// Corresponding game internal method is called based on current game state. <br />
+    /// This method exits if GameState.QUIT is reached.
+    /// </summary>
     public void start() {
       state = GameState.INTRO;
       while (true) {
@@ -55,7 +88,7 @@ namespace PuzzleApp {
             state = playPuzzle();
             break;
           case GameState.QUIT:
-            state = quit();
+            quit();
             return;
           default:
             // Should not reach here
@@ -64,6 +97,16 @@ namespace PuzzleApp {
       }
     }
 
+    /// <summary>
+    /// Intro screen of the game. <br />
+    /// Player chooses shape creation mode here. <br />
+    /// </summary>
+    /// <returns>
+    /// <list>
+    /// <item>GameState.CUSTOM_SHAPE if input == "1"</item>
+    /// <item>GameState.RANDOM_SHAPE if input == "2"</item>
+    /// </list>
+    /// </returns>
     private GameState intro() {
       Console.Clear();
       while (true) {
@@ -81,6 +124,14 @@ namespace PuzzleApp {
       throw new GameException(GameExceptionType.OPERATION_INVALID);
     }
 
+    /// <summary>
+    /// Step for creating a custom shape. <br />
+    /// Player inputs coordinates to form a shape and each of them
+    /// is validated and added to shape one by one. <br />
+    /// Minimum 3 coordinates (vertices) must be added to the shape
+    /// before a shape can be finalized. <br />
+    /// </summary>
+    /// <returns>GameState.PUZZLE if shape is finalized</returns>
     private GameState createCustomShape() {
       // Loop index
       int i = 1;
@@ -102,7 +153,7 @@ namespace PuzzleApp {
           Console.Write("Your current shape is ");
           // Print if shape is valid and complete
           if (i <= Shape.VERTICES_MIN) {
-             Console.WriteLine("incomplete");
+            Console.WriteLine("incomplete");
           }
           else if (zValid != true) {
             Console.WriteLine("invalid");
@@ -169,6 +220,12 @@ namespace PuzzleApp {
       throw new GameException(GameExceptionType.OPERATION_INVALID);
     }
 
+    /// <summary>
+    /// Step for creating a random shape. <br />
+    /// Shape with number of vertices between 3 to 8 will be 
+    /// generated. <br />
+    /// </summary>
+    /// <returns>GameState.PUZZLE if shape is finalized</returns>
     private GameState generateRandomShape() {
       // Generate random shape shape
       this.shape = Shape.genRandom(RANDOM_SHAPE_VERTICES_MAX);
@@ -183,6 +240,14 @@ namespace PuzzleApp {
       return GameState.PUZZLE;
     }
 
+    /// <summary>
+    /// Step for playing the puzzle. <br />
+    /// Player inputs a test coordinates and the game checks if
+    /// it is inside or outside the created shape. <br />
+    /// The game will loop endlessly until player inputs # to
+    /// quit the game. <br />
+    /// </summary>
+    /// <returns>GameState.QUIT when player inputs #</returns>
     private GameState playPuzzle() {
       decimal x, y;
       String[] input;
@@ -191,7 +256,11 @@ namespace PuzzleApp {
 
       while (true) {
         Console.WriteLine("Please key in test coordinates in x y format or enter # to quit the game");
+        // Read user input
         input = Console.ReadLine().Split(" ");
+        // Clear console after input
+        Console.Clear();
+
         if (input[0] == "#") {
           return GameState.QUIT;
         }
@@ -200,8 +269,6 @@ namespace PuzzleApp {
           p = new Point(x, y);
           // Check if the point is inside the shape
           result = this.shape.isPointInside(p);
-          // Clear console
-          Console.Clear();
           Console.WriteLine("Your finalized shape is");
           printShapeVertices();
           // Blank line
@@ -223,11 +290,13 @@ namespace PuzzleApp {
       throw new GameException(GameExceptionType.OPERATION_INVALID);
     }
 
-    private GameState quit() {
-      Console.Clear();
+    /// <summary>
+    /// Step for quitting the game. <br />
+    /// Final messages are printed.
+    /// </summary>
+    private void quit() {
       Console.WriteLine("Thank you for playing the GIC geometry puzzle app");
       Console.WriteLine("Have a nice day!");
-      return GameState.INTRO;
     }
   }
 }
