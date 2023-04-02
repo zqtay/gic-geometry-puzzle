@@ -63,7 +63,7 @@ namespace PuzzleApp {
     /// </summary>
     /// <param name="input"></param>
     private void printInvalidInputMessage(String input) {
-      Console.WriteLine($"Sorry, \"{input}\" is not a valid input\n");
+      Console.WriteLine($"Sorry, \"{input}\" is not a valid input");
     }
 
     /// <summary>
@@ -193,7 +193,7 @@ namespace PuzzleApp {
         else {
           // Process adding point
           decimal x, y;
-          if (Decimal.TryParse(input[0], out x) && Decimal.TryParse(input[1], out y)) {
+          if (input.Length == 2 && Decimal.TryParse(input[0], out x) && Decimal.TryParse(input[1], out y)) {
             p = new Point(x, y);
             try {
               shape.addVertex(p);
@@ -212,6 +212,8 @@ namespace PuzzleApp {
           }
           else {
             printInvalidInputMessage(String.Join(" ", input));
+            // Blank line
+            Console.WriteLine();
           }
         }
       }
@@ -222,7 +224,7 @@ namespace PuzzleApp {
 
     /// <summary>
     /// Step for creating a random shape. <br />
-    /// Shape with number of vertices between 3 to 8 will be 
+    /// Shape with number of vertices between 3 to 8 will be
     /// generated. <br />
     /// </summary>
     /// <returns>GameState.PUZZLE if shape is finalized</returns>
@@ -264,25 +266,27 @@ namespace PuzzleApp {
         if (input[0] == "#") {
           return GameState.QUIT;
         }
-        else if (Decimal.TryParse(input[0], out x) && Decimal.TryParse(input[1], out y)) {
-          // Create new point
-          p = new Point(x, y);
-          // Check if the point is inside the shape
-          result = this.shape.isPointInside(p);
+        else {
           Console.WriteLine("Your finalized shape is");
           printShapeVertices();
           // Blank line
           Console.WriteLine();
-          // Print result
-          if (result) {
-            Console.WriteLine($"Coordinates {p.toString()} is within your finalized shape");
+          if (input.Length == 2 && Decimal.TryParse(input[0], out x) && Decimal.TryParse(input[1], out y)) {
+            // Create new point
+            p = new Point(x, y);
+            // Check if the point is inside the shape
+            result = this.shape.isPointInside(p);
+            // Print result
+            if (result) {
+              Console.WriteLine($"Coordinates {p.toString()} is within your finalized shape");
+            }
+            else {
+              Console.WriteLine($"Sorry, coordinates {p.toString()} is outside of your finalized shape");
+            }
           }
           else {
-            Console.WriteLine($"Sorry, coordinates {p.toString()} is outside of your finalized shape");
+            printInvalidInputMessage(String.Join(" ", input));
           }
-        }
-        else {
-          printInvalidInputMessage(String.Join(" ", input));
         }
       }
 
