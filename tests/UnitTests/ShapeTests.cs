@@ -179,7 +179,7 @@ public class ShapeTests {
     }
     catch (GeometryException e) {
       // Invalid side from (1,1) to (0,0)
-      Assert.That(e.getReason(), Is.EqualTo(GeometryExceptionType.POINT_INVALID));
+      Assert.That(e.getReason(), Is.EqualTo(GeometryExceptionType.SHAPE_INVALID));
       return;
     }
   }
@@ -222,9 +222,68 @@ public class ShapeTests {
     }
     catch (GeometryException e) {
       // (97, 30), (62, 18) crosses (-22, 86), (88, 0)
-      Assert.That(e.getReason(), Is.EqualTo(GeometryExceptionType.POINT_INVALID));
+      Assert.That(e.getReason(), Is.EqualTo(GeometryExceptionType.SHAPE_INVALID));
       return;
     }
+  }
+
+  [Test]
+  public void TestAddPointFinalize_ERR7() {
+    s1 = new Shape();
+    lp = createListOfPoints(
+      (0, 0), (1, 1), (2, 2)
+    );
+    foreach (Point p in lp) {
+      p1 = p;
+      s1.addVertex(p);
+    }
+    try {
+      s1.finalize();
+      Assert.Fail();
+    }
+    catch (GeometryException e) {
+      Assert.That(e.getReason(), Is.EqualTo(GeometryExceptionType.SHAPE_INVALID));
+      return;
+    }
+  }
+
+  [Test]
+  public void TestIsShapeValidFinal_NRM1() {
+    s1 = new Shape();
+    lp = createListOfPoints(
+      (1, 1), (5, 1), (5, 5)
+    );
+    foreach (Point p in lp) {
+      p1 = p;
+      s1.addVertex(p);
+    }
+    Assert.IsTrue(s1.isShapeValidFinal());
+  }
+
+  [Test]
+  public void TestIsShapeValidFinal_NRM2() {
+    s1 = new Shape();
+    lp = createListOfPoints(
+      (1, 1), (5, 1)
+    );
+    foreach (Point p in lp) {
+      p1 = p;
+      s1.addVertex(p);
+    }
+    Assert.IsFalse(s1.isShapeValidFinal());
+  }
+
+  [Test]
+  public void TestIsShapeValidFinal_NRM3() {
+    s1 = new Shape();
+    lp = createListOfPoints(
+      (0, 0), (1, 1), (2, 2)
+    );
+    foreach (Point p in lp) {
+      p1 = p;
+      s1.addVertex(p);
+    }
+    Assert.IsFalse(s1.isShapeValidFinal());
   }
 
   [Test]
