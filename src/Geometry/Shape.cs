@@ -163,10 +163,7 @@ namespace Geometry {
         if ((i == 0 && zFinal) || i == sides.Count - 1) {
           // 1. line is the final side to be added, it must connect to the first vertex
           // 2. line must connect to the last added vertex
-          if (intType != IntersectType.POINT_TO_POINT) {
-            // Should not reach, possibly sides list is not valid
-            throw new GeometryException(GeometryExceptionType.LINE_INVALID);
-          }
+          if (intType != IntersectType.POINT_TO_POINT) return false;
         }
         else {
           // All other sides should not intersect with line
@@ -212,10 +209,8 @@ namespace Geometry {
     /// <returns>true if shape is valid and ready to be finalized.</returns>
     public bool isShapeValidFinal() {
       if (vertices.Count < VERTICES_MIN) return false;
-      Point p = vertices[vertices.Count - 1];
       Line newLine = new Line(vertices[vertices.Count - 1], vertices[0]);
-      if (this.validateSide(newLine, true)) return true;
-      else return false;
+      return this.validateSide(newLine, true);
     }
 
     /// <summary>
@@ -228,17 +223,16 @@ namespace Geometry {
       if (vertices.Count < VERTICES_MIN) {
         throw new GeometryException(GeometryExceptionType.SHAPE_INCOMPLETE);
       }
-      Point p = vertices[vertices.Count - 1];
       Line newLine = new Line(vertices[vertices.Count - 1], vertices[0]);
       // Validate new side
       if (this.validateSide(newLine, true)) {
         // Add final side
-        sides.Add(new Line(vertices[vertices.Count - 1], vertices[0]));
+        sides.Add(newLine);
         // Set final flag to true
         this.zFinal = true;
       }
       else {
-        throw new GeometryException(GeometryExceptionType.POINT_INVALID);
+        throw new GeometryException(GeometryExceptionType.SHAPE_INVALID);
       }
     }
 
@@ -257,9 +251,7 @@ namespace Geometry {
       if (zFinal != true) throw new GeometryException(GeometryExceptionType.SHAPE_NOT_FINALIZED);
 
       // Check p = any of the vertices
-      foreach (Point vertex in vertices) {
-        if (p.isEqual(vertex)) return true;
-      }
+      if (this.vertexExists(p)) return true;
 
       // Create a horizontal line to the furthest right vertex x
       decimal maxX = vertices[0].x;

@@ -166,21 +166,26 @@ namespace PuzzleApp {
         }
 
         // Print instructions
-        if (i <= 3) Console.WriteLine($"Please enter coordinates {i} in x y format");
-        else Console.WriteLine($"Please enter # to finalize your shape or enter coordinates {i} in x y format");
+        if (i <= 3 || !zValid) {
+          Console.WriteLine($"Please enter coordinates {i} in x y format");
+        }
+        else {
+          Console.WriteLine($"Please enter # to finalize your shape or enter coordinates {i} in x y format");
+        }
 
         // Read user input
         input = Console.ReadLine().Split(" ");
         // Clear console after input
         Console.Clear();
 
-        if (input[0] == "#") {
+        if (input[0] == "#" && zValid) {
           try {
             // Finalize shape
             this.shape.finalize();
           }
           catch (GeometryException e) {
             Console.WriteLine($"Shape not able to be finalized.\n");
+            continue;
           }
           // Finalize successful
           Console.WriteLine("Your finalized shape is");
